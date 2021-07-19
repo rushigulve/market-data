@@ -1,0 +1,126 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<math.h>
+#include<string.h>
+
+#define BUFFER_SIZE 1000
+
+struct Product{
+        char Product_Name[50];
+        int Price;
+        int Stock;
+    };
+
+struct Market{
+    char Location[10];
+    char Timing_Open[10];
+    char Timing_Close[10];
+    int Product_Variety;
+    struct Product info[];
+};
+
+int indexOf(FILE *fptr, const char *word, int *line, int *col){
+    char str[BUFFER_SIZE];
+    char *pos;
+    *line=-1;
+    *col =-1;
+    
+    while((fgets(str, BUFFER_SIZE, fptr)) != NULL){
+        *line += 1;
+        pos = strstr(str,word);
+        
+        if (pos != NULL){
+            *col = (pos - str);
+            break;
+        }
+    }
+    if(*col== -1){
+        *line= -1;
+    }
+    return *col;
+}
+
+int main(){
+    printf("type 1 if you are searching\ntype 2 if you want to add\n");
+    int c;
+    scanf("%d",&c);
+    
+    if(c==1){
+        printf("Enter the name of the market\n");
+        
+        char word[50];
+        int line, col;
+        
+        scanf("%s",word);
+        
+        FILE *fptr2;
+        fptr2=fopen("marketdata.txt","r");
+        
+        indexOf(fptr2, word, &line, &col);
+        
+        if(line !=1){
+            char ch[256];
+            int i=0;
+            while(fgets(ch, sizeof(ch), fptr2)){
+                i++;
+                if(i== line)
+                printf("%s",ch);
+            }
+        }
+        
+        else
+        printf("'%s' does not exist.", word);
+        
+        fclose(fptr2);
+        return 0;
+        
+    }
+    
+    
+    else if(c==2){
+        
+        FILE *fptr1;
+        fptr1=fopen("marketdata.txt","a");
+        char content[200];
+        
+        printf("Enter the location of the market\n");
+        scanf("%s",content);;
+        fprintf(fptr1,"%s ",content);
+        
+        printf("Enter the opening time of the market\n");
+        scanf("%s",content);;
+        fprintf(fptr1,"%s ",content);
+        
+        printf("Enter the closing of the market\n");
+        scanf("%s",content);;
+        fprintf(fptr1,"%s ",content);
+        
+        int variety,i,k;
+        
+        printf("Enter the number of variety of products available the market\n");
+        scanf("%d",&variety);
+        fprintf(fptr1,"%d ",variety);
+        
+        for(i=0;i<variety;i++){
+            printf("enter name of %dth product\n",i+1);
+            scanf("%s",content);
+            fprintf(fptr1,"%s ",content);
+            
+            printf("enter price of the product\n");
+            scanf("%d",&k);
+            fprintf(fptr1,"%d ",k);
+            
+            printf("enter stock available of product\n");
+            scanf("%d",&k);
+            fprintf(fptr1,"%d ",k);
+        }
+        fprintf(fptr1,"\n");
+        printf("Thankyou!");
+        fclose(fptr1);
+        return 0;
+        
+    }
+    else
+    printf("error!");
+    return 0;
+}
